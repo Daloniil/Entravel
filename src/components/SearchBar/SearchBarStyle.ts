@@ -24,17 +24,6 @@ export const Label = styled.label`
   color: #555;
 `;
 
-export const Input = styled.input`
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 16px;
-  &:focus {
-    border-color: #007bff;
-    outline: none;
-  }
-`;
-
 export const Button = styled.button`
   background-color: #007bff;
   color: white;

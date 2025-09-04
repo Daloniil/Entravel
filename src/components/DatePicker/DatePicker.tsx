@@ -8,6 +8,7 @@ interface DatePickerProps {
   min?: string;
   max?: string;
   label: string;
+  placeholder?: string; // Add placeholder prop
 }
 
 const DatePicker: React.FC<DatePickerProps> = ({
@@ -28,6 +29,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
         min={min}
         max={max}
         aria-label={label}
+        $hasValue={!!value}
       />
     </DatePickerWrapper>
   );

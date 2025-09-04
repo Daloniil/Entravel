@@ -8,11 +8,11 @@ import Dropdown from "../Dropdown/Dropdown";
 import DatePicker from "../DatePicker/DatePicker"; // Import DatePicker
 import {
   SearchBarContainer,
-  InputGroup,
-  Label,
-  Input,
+  InputGroup, // Keep InputGroup for other sections
+  Label, // Keep Label for other sections
   Button,
 } from "./SearchBarStyle";
+import PassengerInput from "../PassengerInput/PassengerInput"; // Import PassengerInput
 
 const SearchBar: React.FC = () => {
   const { searchState, updateSearchState } = useSearch();
@@ -20,13 +20,6 @@ const SearchBar: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     updateSearchState({ [id]: value });
-  };
-
-  const handlePassengerChange = (
-    type: "adults" | "children" | "infants",
-    value: string
-  ) => {
-    updateSearchState({ [type]: parseInt(value, 10) });
   };
 
   const handleSearch = () => {
@@ -101,10 +94,11 @@ const SearchBar: React.FC = () => {
         <DatePicker
           id="departureDate"
           label="Departure Date"
+          placeholder="Select Departure Date"
           value={searchState.departureDate}
           onChange={(value) => updateSearchState({ departureDate: value })}
-          min={new Date().toISOString().split("T")[0]} // Today's date as minimum
-          max={searchState.returnDate || undefined} // Max is return date if set
+          min={new Date().toISOString().split("T")[0]}
+          max={searchState.returnDate || undefined}
         />
       </InputGroup>
 
@@ -114,43 +108,25 @@ const SearchBar: React.FC = () => {
           <DatePicker
             id="returnDate"
             label="Return Date"
+            placeholder="Select Return Date"
             value={searchState.returnDate}
             onChange={(value) => updateSearchState({ returnDate: value })}
             min={
               searchState.departureDate ||
               new Date().toISOString().split("T")[0]
-            } // Min is departure date or today
+            }
           />
         </InputGroup>
       )}
 
-      <InputGroup>
-        <Label>Passengers</Label>
-        <Input
-          type="number"
-          placeholder="Adults"
-          min="1"
-          id="adults"
-          value={searchState.adults}
-          onChange={(e) => handlePassengerChange("adults", e.target.value)}
-        />
-        <Input
-          type="number"
-          placeholder="Children"
-          min="0"
-          id="children"
-          value={searchState.children}
-          onChange={(e) => handlePassengerChange("children", e.target.value)}
-        />
-        <Input
-          type="number"
-          placeholder="Infants"
-          min="0"
-          id="infants"
-          value={searchState.infants}
-          onChange={(e) => handlePassengerChange("infants", e.target.value)}
-        />
-      </InputGroup>
+      <PassengerInput
+        adults={searchState.adults}
+        children={searchState.children}
+        infants={searchState.infants}
+        onAdultsChange={(value) => updateSearchState({ adults: value })}
+        onChildrenChange={(value) => updateSearchState({ children: value })}
+        onInfantsChange={(value) => updateSearchState({ infants: value })}
+      />
 
       <Button onClick={handleSearch}>Search Flights</Button>
     </SearchBarContainer>
