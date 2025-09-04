@@ -12,7 +12,7 @@ import {
   FlightDetails,
   Route,
   LoadingMessage,
-} from "./FlightResults";
+} from "./FlightResultsStyle";
 
 interface FlightResultsProps {
   results: FlightResult[];

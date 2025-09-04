@@ -5,6 +5,7 @@ import { searchAirports } from "../../services/airportService";
 import type { Airport } from "../../services/airportService";
 import AutocompleteInput from "../AutocompleteInput/AutocompleteInput";
 import Dropdown from "../Dropdown/Dropdown";
+import DatePicker from "../DatePicker/DatePicker"; // Import DatePicker
 import {
   SearchBarContainer,
   InputGroup,
@@ -97,22 +98,28 @@ const SearchBar: React.FC = () => {
 
       <InputGroup>
         <Label htmlFor="departureDate">Departure Date</Label>
-        <Input
+        <DatePicker
           id="departureDate"
-          type="date"
+          label="Departure Date"
           value={searchState.departureDate}
-          onChange={handleInputChange}
+          onChange={(value) => updateSearchState({ departureDate: value })}
+          min={new Date().toISOString().split("T")[0]} // Today's date as minimum
+          max={searchState.returnDate || undefined} // Max is return date if set
         />
       </InputGroup>
 
       {searchState.flightType === "round-trip" && (
         <InputGroup>
           <Label htmlFor="returnDate">Return Date</Label>
-          <Input
+          <DatePicker
             id="returnDate"
-            type="date"
+            label="Return Date"
             value={searchState.returnDate}
-            onChange={handleInputChange}
+            onChange={(value) => updateSearchState({ returnDate: value })}
+            min={
+              searchState.departureDate ||
+              new Date().toISOString().split("T")[0]
+            } // Min is departure date or today
           />
         </InputGroup>
       )}

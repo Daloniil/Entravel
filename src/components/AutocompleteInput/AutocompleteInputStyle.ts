@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { colors } from "../../styles/theme";
 
 export const AutocompleteContainer = styled.div`
   position: relative;
@@ -8,14 +9,14 @@ export const AutocompleteContainer = styled.div`
 export const Input = styled.input`
   width: 100%;
   padding: 10px 15px;
-  border: 1px solid #007bff;
+  border: 1px solid ${colors.primary};
   border-radius: 4px;
-  background-color: #f0f7ff;
-  color: #007bff;
+  background-color: ${colors.lightBlue};
+  color: ${colors.primary};
   font-size: 16px;
   &:focus {
     outline: none;
-    border-color: #0056b3;
+    border-color: ${colors.secondary};
   }
 `;
 
@@ -24,8 +25,8 @@ export const SuggestionsList = styled.ul`
   top: 100%;
   left: 0;
   right: 0;
-  background-color: #fff;
-  border: 1px solid #007bff; /* Changed border color */
+  background-color: ${colors.white};
+  border: 1px solid ${colors.primary};
   border-top: none;
   border-radius: 0 0 4px 4px;
   list-style: none;
@@ -33,19 +34,19 @@ export const SuggestionsList = styled.ul`
   margin: 0;
   max-height: 200px;
   overflow-y: auto;
-  z-index: 100; /* Changed z-index */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  box-shadow: 0 4px 8px ${colors.boxShadow};
 `;
 
 export const SuggestionItem = styled.li`
-  padding: 10px 15px; /* Changed padding */
+  padding: 10px 15px;
   cursor: pointer;
-  color: #007bff; /* Added color */
+  color: ${colors.primary};
   &:hover {
-    background-color: #e0efff; /* Changed hover color */
+    background-color: ${colors.lightHoverBlue};
   }
   &.active {
-    background-color: #007bff;
-    color: white;
+    background-color: ${colors.primary};
+    color: ${colors.white};
   }
 `;

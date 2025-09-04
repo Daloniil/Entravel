@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { colors } from "../../styles/theme";
 
 export const SelectWrapper = styled.div`
   position: relative;
@@ -9,10 +10,10 @@ export const SelectWrapper = styled.div`
 export const StyledSelectButton = styled.button`
   width: 100%;
   padding: 10px 15px;
-  border: 1px solid #007bff;
+  border: 1px solid ${colors.primary};
   border-radius: 4px;
-  background-color: #f0f7ff;
-  color: #007bff;
+  background-color: ${colors.lightBlue};
+  color: ${colors.primary};
   font-size: 16px;
   text-align: left;
   cursor: pointer;
@@ -21,13 +22,13 @@ export const StyledSelectButton = styled.button`
   align-items: center;
   &:focus {
     outline: none;
-    border-color: #0056b3;
+    border-color: ${colors.secondary};
   }
 `;
 
 export const DropdownIcon = styled.span`
   margin-left: 10px;
-  border: solid #007bff;
+  border: solid ${colors.primary};
   border-width: 0 2px 2px 0;
   display: inline-block;
   padding: 3px;
@@ -40,26 +41,26 @@ export const DropdownList = styled.ul`
   top: 100%;
   left: 0;
   right: 0;
-  background-color: #fff;
-  border: 1px solid #007bff;
+  background-color: ${colors.white};
+  border: 1px solid ${colors.primary};
   border-top: none;
   border-radius: 0 0 4px 4px;
   list-style: none;
   padding: 0;
   margin: 0;
   z-index: 100;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px ${colors.boxShadow};
 `;
 
 export const DropdownItem = styled.li`
   padding: 10px 15px;
   cursor: pointer;
-  color: #007bff;
+  color: ${colors.primary};
   &:hover {
-    background-color: #e0efff;
+    background-color: ${colors.lightHoverBlue};
   }
   &.active {
-    background-color: #007bff;
-    color: white;
+    background-color: ${colors.primary};
+    color: ${colors.white};
   }
 `;

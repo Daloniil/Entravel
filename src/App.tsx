@@ -8,6 +8,7 @@ import { useSearch } from "./hooks/useSearch";
 import { searchFlights } from "./services/flightService";
 import type { FlightResult } from "./services/flightService";
 import { useConfig } from "./hooks/useConfig";
+import { theme } from "./styles/theme";
 
 const AppContainer = styled.div`
   display: flex;
@@ -40,7 +41,7 @@ function App() {
   }, [searchState]);
 
   return (
-    <ThemeProvider theme={config.theme}>
+    <ThemeProvider theme={theme}>
       <GlobalStyles />
       <AppContainer>
         <Header>{config.appName}</Header>
