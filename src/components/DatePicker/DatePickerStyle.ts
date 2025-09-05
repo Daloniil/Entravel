@@ -32,15 +32,19 @@ export const StyledDateInput = styled.input<{ $hasValue: boolean }>`
   }
   &::-webkit-datetime-edit-text {
     color: ${(props) => (props.$hasValue ? colors.primary : "transparent")};
+    display: ${(props) => (props.$hasValue ? "inline" : "none")};
   }
   &::-webkit-datetime-edit-month-field {
     color: ${(props) => (props.$hasValue ? colors.primary : "transparent")};
+    display: ${(props) => (props.$hasValue ? "inline" : "none")};
   }
   &::-webkit-datetime-edit-day-field {
     color: ${(props) => (props.$hasValue ? colors.primary : "transparent")};
+    display: ${(props) => (props.$hasValue ? "inline" : "none")};
   }
   &::-webkit-datetime-edit-year-field {
     color: ${(props) => (props.$hasValue ? colors.primary : "transparent")};
+    display: ${(props) => (props.$hasValue ? "inline" : "none")};
   }
 
   /* Ensure the calendar icon is always visible and styled */

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { FlightType } from "../../types/search";
 import { useAirportSearch } from "../../context/AirportSearchContext";
 import type { Airport } from "../../types/common";
@@ -10,6 +10,7 @@ import {
   InputGroup,
   Label,
   Button,
+  SearchButtonContainer,
 } from "./SearchBarStyle";
 import PassengerInput from "../PassengerInput/PassengerInput";
 import { useFlightSearch } from "../../context/FlightSearchContext";
@@ -30,6 +31,34 @@ const SearchBar: React.FC = () => {
   };
 
   const handleSearch = () => fetchFlights();
+
+  const isSearchDisabled = useMemo(() => {
+    const {
+      from,
+      fromCode,
+      to,
+      toCode,
+      departureDate,
+      returnDate,
+      adults,
+      children,
+      infants,
+    } = filter;
+
+    if (!from || !fromCode || !to || !toCode || !departureDate) {
+      return true;
+    }
+
+    if (adults || children || infants) {
+      return true;
+    }
+
+    if (filter.flightType === FlightType.ROUND_TRIP && !returnDate) {
+      return true;
+    }
+
+    return false;
+  }, [filter]);
 
   return (
     <SearchBarContainer>
@@ -94,7 +123,6 @@ const SearchBar: React.FC = () => {
         <DatePicker
           id="departureDate"
           label="Departure Date"
-          placeholder="Select Departure Date"
           value={filter.departureDate}
           onChange={(value) => handleChangeFilter("departureDate", value)}
           min={new Date().toISOString().split("T")[0]}
@@ -108,7 +136,6 @@ const SearchBar: React.FC = () => {
           <DatePicker
             id="returnDate"
             label="Return Date"
-            placeholder="Select Return Date"
             value={filter.returnDate}
             onChange={(value) => handleChangeFilter("returnDate", value)}
             min={filter.departureDate || new Date().toISOString().split("T")[0]}
@@ -131,7 +158,11 @@ const SearchBar: React.FC = () => {
         }
       />
 
-      <Button onClick={handleSearch}>Search Flights</Button>
+      <SearchButtonContainer>
+        <Button onClick={handleSearch} disabled={isSearchDisabled}>
+          Search Flights
+        </Button>
+      </SearchButtonContainer>
     </SearchBarContainer>
   );
 };

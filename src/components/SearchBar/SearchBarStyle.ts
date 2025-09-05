@@ -33,7 +33,20 @@ export const Button = styled.button`
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.2s;
+  width: 100%; /* Make the button take full width */
   &:hover {
     background-color: #0056b3;
   }
+
+  &:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+`;
+
+export const SearchButtonContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 20px; /* Add some space above the button */
 `;
