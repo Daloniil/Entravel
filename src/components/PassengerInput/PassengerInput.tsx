@@ -6,18 +6,14 @@ interface PassengerInputProps {
   adults: number;
   children: number;
   infants: number;
-  onAdultsChange: (value: number) => void;
-  onChildrenChange: (value: number) => void;
-  onInfantsChange: (value: number) => void;
+  onChange: (type: string, value: number) => void;
 }
 
 const PassengerInput: React.FC<PassengerInputProps> = ({
   adults,
   children,
   infants,
-  onAdultsChange,
-  onChildrenChange,
-  onInfantsChange,
+  onChange,
 }) => {
   return (
     <InputGroup>
@@ -28,7 +24,7 @@ const PassengerInput: React.FC<PassengerInputProps> = ({
           id="adults"
           label="Adults"
           value={adults}
-          onChange={onAdultsChange}
+          onChange={(value) => onChange("adults", value)}
           min={1}
         />
       </PassengerInputField>
@@ -38,7 +34,7 @@ const PassengerInput: React.FC<PassengerInputProps> = ({
           id="children"
           label="Children"
           value={children}
-          onChange={onChildrenChange}
+          onChange={(value) => onChange("children", value)}
           min={0}
         />
       </PassengerInputField>
@@ -48,7 +44,7 @@ const PassengerInput: React.FC<PassengerInputProps> = ({
           id="infants"
           label="Infants"
           value={infants}
-          onChange={onInfantsChange}
+          onChange={(value) => onChange("infants", value)}
           min={0}
         />
       </PassengerInputField>

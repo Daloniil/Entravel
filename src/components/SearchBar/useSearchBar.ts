@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { FlightType, type SearchState } from "../../types/search";
+import { FlightClass, FlightType, type SearchState } from "../../types/search";
 
 export const useSearchBar = ({
   filter,
@@ -19,26 +19,28 @@ export const useSearchBar = ({
     updateFilter({ [type]: value });
   };
 
+  const handleClearFilters = () => {
+    updateFilter({
+      from: "",
+      fromCode: "",
+      to: "",
+      toCode: "",
+      departureDate: "",
+      returnDate: "",
+      adults: 1,
+      children: 0,
+      infants: 0,
+      flightType: FlightType.ONE_WAY,
+      flightClass: FlightClass.ECONOMY,
+    });
+  };
+
   const handleSearch = () => fetchFlights();
 
   const isSearchDisabled = useMemo(() => {
-    const {
-      from,
-      fromCode,
-      to,
-      toCode,
-      departureDate,
-      returnDate,
-      adults,
-      children,
-      infants,
-    } = filter;
+    const { from, fromCode, to, toCode, departureDate, returnDate } = filter;
 
     if (!from || !fromCode || !to || !toCode || !departureDate) {
-      return true;
-    }
-
-    if (adults || children || infants) {
       return true;
     }
 
@@ -54,5 +56,6 @@ export const useSearchBar = ({
     handleInputChange,
     handleChangeFilter,
     handleSearch,
+    handleClearFilters,
   };
 };

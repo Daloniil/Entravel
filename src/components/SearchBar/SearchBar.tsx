@@ -27,6 +27,7 @@ const SearchBar: React.FC = () => {
     handleChangeFilter,
     handleSearch,
     isSearchDisabled,
+    handleClearFilters,
   } = useSearchBar({
     filter,
     updateFilter,
@@ -120,18 +121,13 @@ const SearchBar: React.FC = () => {
         adults={filter.adults}
         children={filter.children}
         infants={filter.infants}
-        onAdultsChange={(value) =>
-          handleChangeFilter("adults", value.toString())
-        }
-        onChildrenChange={(value) =>
-          handleChangeFilter("children", value.toString())
-        }
-        onInfantsChange={(value) =>
-          handleChangeFilter("infants", value.toString())
-        }
+        onChange={(type, value) => handleChangeFilter(type, value.toString())}
       />
 
       <SearchButtonContainer>
+        <Button onClick={handleClearFilters} variant="danger">
+          Clear Filters
+        </Button>
         <Button onClick={handleSearch} disabled={isSearchDisabled}>
           Search Flights
         </Button>

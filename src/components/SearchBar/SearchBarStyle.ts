@@ -24,8 +24,15 @@ export const Label = styled.label`
   color: #555;
 `;
 
-export const Button = styled.button`
-  background-color: #007bff;
+export const Button = styled.button<{
+  variant?: "primary" | "secondary" | "danger";
+}>`
+  background-color: ${({ variant }) =>
+    variant === "danger"
+      ? "#dc3545"
+      : variant === "secondary"
+      ? "#6c757d"
+      : "#007bff"};
   color: white;
   padding: 10px 20px;
   border: none;
@@ -35,7 +42,12 @@ export const Button = styled.button`
   transition: background-color 0.2s;
   width: 100%; /* Make the button take full width */
   &:hover {
-    background-color: #0056b3;
+    background-color: ${({ variant }) =>
+      variant === "danger"
+        ? "#c82333"
+        : variant === "secondary"
+        ? "#545b62"
+        : "#0056b3"};
   }
 
   &:disabled {

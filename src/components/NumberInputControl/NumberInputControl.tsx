@@ -17,11 +17,11 @@ const NumberInputControl: React.FC<NumberInputControlProps> = ({
   min,
 }) => {
   const handleDecrement = () => {
-    onChange(Math.max(min, value - 1));
+    onChange(Math.max(min, Number(value) - 1));
   };
 
   const handleIncrement = () => {
-    onChange(value + 1);
+    onChange(Number(value) + 1);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

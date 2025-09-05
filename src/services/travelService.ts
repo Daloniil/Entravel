@@ -3,8 +3,7 @@ import type { Airport } from "../types/common";
 import type { FlightResult } from "../store/flightSearchStore";
 import { FlightType } from "../types/search";
 
-import type { FlightSearchParams } from "./types";
-import type { KiwiFlightResult } from "./types";
+import type { FlightSearchParams, KiwiFlightResult } from "./types";
 import type { SkyscannerPlaceResult } from "./types";
 
 import { KIWI_API_KEY, KIWI_BASE_URL, KIWI_API_HOST } from "../utils/constants";
@@ -13,6 +12,7 @@ import {
   FLIGHTS_SKY_BASE_URL,
   FLIGHTS_SKY_API_HOST,
 } from "../utils/constants";
+import { mapKiwiSegmentToFlightBoundaries } from "../utils/mapKiwiSegmentToFlightBoundaries";
 
 const kiwiApiClient = ApiFactory({
   baseURL: KIWI_BASE_URL,
@@ -55,8 +55,9 @@ export const travelService = {
         infants: params.infants,
         cabinClass: params.cabinClass.toUpperCase(),
         limit: 20,
-        handbags: 1,
-        holdbags: 1,
+        handbags: params.adults,
+        holdbags: params.adults,
+        adultsHoldBags: 1,
         sortBy: "DURATION",
         sortOrder: "ASCENDING",
         applyMixedClasses: false,
@@ -73,80 +74,38 @@ export const travelService = {
       // const dateFrom = params.departureDate;
       // const dateTo = params.returnDate || params.departureDate;
 
-      // const kiwiParams = {
-      //   ...requestParams,
-      //   dateFrom: dateFrom,
-      //   ...(params.flightType === FlightType.ROUND_TRIP && { dateTo: dateTo }),
-      // };
+      const kiwiParams = {
+        ...requestParams,
+        // outboundDepartmentDateStart: dateFrom,
+        // inboundDepartureDateEnd: dateFrom,
+
+        ...(params.flightType === FlightType.ROUND_TRIP &&
+          {
+            // inboundDepartureDateStart: dateTo,
+            // outboundDepartmentDateEnd: dateTo,
+          }),
+      };
 
       const response = await kiwiApiClient.get(endpoint, {
-        params: requestParams,
+        params: kiwiParams,
       });
 
       const mappedResults: FlightResult[] = response.data.itineraries.map(
-        (itinerary: KiwiFlightResult) => ({
-          id: itinerary.id,
-          outbound: {
-            airline: itinerary.outbound
-              ? itinerary.outbound.sectorSegments[0].segment.carrier.name
-              : itinerary.sector.sectorSegments[0].segment.carrier.name,
-            flightNumber: itinerary.outbound
-              ? itinerary.outbound.sectorSegments[0].segment.code
-              : itinerary.sector.sectorSegments[0].segment.code,
-            departureAirport: `${
-              itinerary.outbound
-                ? itinerary.outbound.sectorSegments[0].segment.source.station
-                    .city.name
-                : itinerary.sector.sectorSegments[0].segment.source.station.city
-                    .name
-            } – ${
-              itinerary.outbound
-                ? itinerary.outbound.sectorSegments[0].segment.source.station
-                    .name
-                : itinerary.sector.sectorSegments[0].segment.source.station.name
-            }`,
-            arrivalAirport: `${
-              itinerary.outbound
-                ? itinerary.outbound.sectorSegments[0].segment.destination
-                    .station.city.name
-                : itinerary.sector.sectorSegments[0].segment.destination.station
-                    .city.name
-            } - ${
-              itinerary.outbound
-                ? itinerary.outbound.sectorSegments[0].segment.destination
-                    .station.name
-                : itinerary.sector.sectorSegments[0].segment.destination.station
-                    .name
-            }`,
-            departureTime: itinerary.outbound
-              ? itinerary.outbound.sectorSegments[0].segment.source.localTime
-              : itinerary.sector.sectorSegments[0].segment.source.localTime,
-            arrivalTime: itinerary.outbound
-              ? itinerary.outbound.sectorSegments[0].segment.destination
-                  .localTime
-              : itinerary.sector.sectorSegments[0].segment.destination
-                  .localTime,
-            duration: itinerary.outbound
-              ? itinerary.outbound.sectorSegments[0].segment.duration
-              : itinerary.sector.sectorSegments[0].segment.duration,
-          },
-          inbound: itinerary.inbound
-            ? {
-                airline:
-                  itinerary.inbound.sectorSegments[0].segment.carrier.name,
-                flightNumber: itinerary.inbound.sectorSegments[0].segment.code,
-                departureAirport: `${itinerary.inbound.sectorSegments[0].segment.source.station.city.name} – ${itinerary.inbound.sectorSegments[0].segment.source.station.name}`,
-                arrivalAirport: `${itinerary.inbound.sectorSegments[0].segment.destination.station.city.name} - ${itinerary.inbound.sectorSegments[0].segment.destination.station.name}`,
-                departureTime:
-                  itinerary.inbound.sectorSegments[0].segment.source.localTime,
-                arrivalTime:
-                  itinerary.inbound.sectorSegments[0].segment.destination
-                    .localTime,
-                duration: itinerary.inbound.sectorSegments[0].segment.duration,
-              }
-            : undefined,
-          price: parseFloat(itinerary.price.amount),
-        })
+        (itinerary: KiwiFlightResult) => {
+          const outboundSegment =
+            itinerary.outbound?.sectorSegments[0]?.segment ||
+            itinerary.sector.sectorSegments[0].segment;
+          const inboundSegment = itinerary.inbound?.sectorSegments[0]?.segment;
+
+          return {
+            id: itinerary.id,
+            outbound: mapKiwiSegmentToFlightBoundaries(outboundSegment),
+            inbound: inboundSegment
+              ? mapKiwiSegmentToFlightBoundaries(inboundSegment)
+              : undefined,
+            price: parseFloat(itinerary.price.amount),
+          };
+        }
       );
       return mappedResults;
     } catch (error) {
