@@ -6,7 +6,7 @@ import {
   Input,
   SuggestionItem,
   SuggestionsList,
-} from "./AutoCompleteInputStyle";
+} from "./AutoCompleteInputStyle.ts";
 
 interface AutoCompleteInputProps {
   id: string;

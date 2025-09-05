@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import useDebounce from "../../hooks/useDebounce";
 import type { Airport } from "../../types/common";
-import { SuggestionsList } from "./AutoCompleteInputStyle";
+import { SuggestionsList } from "./AutoCompleteInputStyle.ts";
 
 export const useAutoCompleteInput = (
   value: string,
