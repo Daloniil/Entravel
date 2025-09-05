@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://Daloniil.github.io/Entravel/findTickets",
+  "homepage": "https://Daloniil.github.io/Entravel/",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
