@@ -71,23 +71,8 @@ export const travelService = {
         contentProviders: "FLIXBUS_DIRECTS,FRESH,KAYAK,KIWI",
       };
 
-      // const dateFrom = params.departureDate;
-      // const dateTo = params.returnDate || params.departureDate;
-
-      const kiwiParams = {
-        ...requestParams,
-        // outboundDepartmentDateStart: dateFrom,
-        // inboundDepartureDateEnd: dateFrom,
-
-        ...(params.flightType === FlightType.ROUND_TRIP &&
-          {
-            // inboundDepartureDateStart: dateTo,
-            // outboundDepartmentDateEnd: dateTo,
-          }),
-      };
-
       const response = await kiwiApiClient.get(endpoint, {
-        params: kiwiParams,
+        params: requestParams,
       });
 
       const mappedResults: FlightResult[] = response.data.itineraries.map(

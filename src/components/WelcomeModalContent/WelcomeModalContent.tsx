@@ -1,8 +1,19 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import Modal from "../Modal/Modal";
 
 const WelcomeModalContent: React.FC = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    const hasSeenWelcomeModal = localStorage.getItem("hasSeenWelcomeModal");
+    if (!hasSeenWelcomeModal) {
+      setIsModalOpen(true);
+      localStorage.setItem("hasSeenWelcomeModal", "true");
+    }
+  }, []);
+
   return (
-    <>
+    <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
       <h3>⚠️ Important notice:</h3>
       <p>
         I deliberately chose to use the real Kiwi API (via RapidAPI) instead of
@@ -37,7 +48,7 @@ const WelcomeModalContent: React.FC = () => {
         lies within the API itself, so I kindly ask not to treat this as a
         shortcoming of my solution.
       </p>
-    </>
+    </Modal>
   );
 };
 

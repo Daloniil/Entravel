@@ -1,5 +1,3 @@
-// src/types/common.ts
-
 export interface Airport {
   code: string;
   name: string;
