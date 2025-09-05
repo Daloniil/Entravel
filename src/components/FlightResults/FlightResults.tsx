@@ -1,5 +1,5 @@
 import React from "react";
-import { useFlightSearch } from "../../context/FlightSearchContext";
+import { useFlightSearchStore } from "../../store/flightSearchStore";
 import {
   NoResultsMessage,
   ResultsContainer,
@@ -10,7 +10,7 @@ import {
 import FlightDetailsCard from "./FlightDetailsCard";
 
 const FlightResults: React.FC = () => {
-  const { flights: results, loading } = useFlightSearch();
+  const { flights: results, loading } = useFlightSearchStore();
 
   if (loading) {
     return <LoadingMessage>Searching for flights...</LoadingMessage>;

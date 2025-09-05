@@ -1,8 +1,7 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { FlightType } from "../../types/search";
-import { useAirportSearch } from "../../context/AirportSearchContext";
+import { useAirportSearchStore } from "../../store/airportSearchStore";
 import type { Airport } from "../../types/common";
-import AutocompleteInput from "../AutocompleteInput/AutocompleteInput";
 import Dropdown from "../Dropdown/Dropdown";
 import DatePicker from "../DatePicker/DatePicker";
 import {
@@ -13,52 +12,26 @@ import {
   SearchButtonContainer,
 } from "./SearchBarStyle";
 import PassengerInput from "../PassengerInput/PassengerInput";
-import { useFlightSearch } from "../../context/FlightSearchContext";
+import { useFlightSearchStore } from "../../store/flightSearchStore";
 import { FLIGHT_TYPE_OPTIONS } from "../../utils/constants";
 import { FLIGHT_CLASS_OPTIONS } from "../../utils/constants";
+import AutoCompleteInput from "../AutoCompleteInput/AutoCompleteInput";
+import { useSearchBar } from "./useSearchBar";
 
 const SearchBar: React.FC = () => {
-  const { searchAirports } = useAirportSearch();
-  const { filter, updateFilter, fetchFlights } = useFlightSearch();
+  const { searchAirports } = useAirportSearchStore();
+  const { filter, updateFilter, fetchFlights } = useFlightSearchStore();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    updateFilter({ [id]: value });
-  };
-
-  const handleChangeFilter = (type: string, value: string) => {
-    updateFilter({ [type]: value });
-  };
-
-  const handleSearch = () => fetchFlights();
-
-  const isSearchDisabled = useMemo(() => {
-    const {
-      from,
-      fromCode,
-      to,
-      toCode,
-      departureDate,
-      returnDate,
-      adults,
-      children,
-      infants,
-    } = filter;
-
-    if (!from || !fromCode || !to || !toCode || !departureDate) {
-      return true;
-    }
-
-    if (adults || children || infants) {
-      return true;
-    }
-
-    if (filter.flightType === FlightType.ROUND_TRIP && !returnDate) {
-      return true;
-    }
-
-    return false;
-  }, [filter]);
+  const {
+    handleInputChange,
+    handleChangeFilter,
+    handleSearch,
+    isSearchDisabled,
+  } = useSearchBar({
+    filter,
+    updateFilter,
+    fetchFlights,
+  });
 
   return (
     <SearchBarContainer>
@@ -84,7 +57,7 @@ const SearchBar: React.FC = () => {
 
       <InputGroup>
         <Label htmlFor="from">From</Label>
-        <AutocompleteInput
+        <AutoCompleteInput
           id="from"
           placeholder="Departure city"
           value={filter.from}
@@ -102,7 +75,7 @@ const SearchBar: React.FC = () => {
 
       <InputGroup>
         <Label htmlFor="to">To</Label>
-        <AutocompleteInput
+        <AutoCompleteInput
           id="to"
           placeholder="Arrival city"
           value={filter.to}

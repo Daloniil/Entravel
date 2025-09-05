@@ -1,6 +1,6 @@
 import ApiFactory from "./api";
 import type { Airport } from "../types/common";
-import type { FlightResult } from "../context/FlightSearchContext";
+import type { FlightResult } from "../store/flightSearchStore";
 import { FlightType } from "../types/search";
 
 import type { FlightSearchParams } from "./types";

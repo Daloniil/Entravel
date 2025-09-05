@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { colors } from "../../styles/theme";
 
-export const AutocompleteContainer = styled.div`
+export const AutoCompleteInputContainer = styled.div`
   position: relative;
   width: 100%;
 `;

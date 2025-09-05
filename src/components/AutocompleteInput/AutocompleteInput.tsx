@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useRef } from "react";
-import useDebounce from "../../hooks/useDebounce";
-import {
-  AutocompleteContainer,
-  Input,
-  SuggestionsList,
-  SuggestionItem,
-} from "./AutocompleteInputStyle";
+import React, { useRef } from "react";
 import type { Airport } from "../../types/common";
+import { useAutoCompleteInput } from "./useAutoCompleteInput";
+import {
+  AutoCompleteInputContainer,
+  Input,
+  SuggestionItem,
+  SuggestionsList,
+} from "./AutoCompleteInputStyle";
 
-interface AutocompleteInputProps {
+interface AutoCompleteInputProps {
   id: string;
   placeholder: string;
   value: string;
@@ -19,7 +19,7 @@ interface AutocompleteInputProps {
   debounceTime?: number;
 }
 
-function AutocompleteInput({
+function AutoCompleteInput({
   id,
   placeholder,
   value,
@@ -28,61 +28,26 @@ function AutocompleteInput({
   searchFunction,
   renderSuggestion,
   debounceTime = 300,
-}: AutocompleteInputProps) {
-  const [suggestions, setSuggestions] = useState<Airport[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [isSelecting, setIsSelecting] = useState(false);
+}: AutoCompleteInputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const debouncedValue = useDebounce(value, debounceTime);
-
-  useEffect(() => {
-    if (isSelecting) {
-      setIsSelecting(false);
-      return;
-    }
-
-    if (debouncedValue.length > 0) {
-      setLoading(true);
-      searchFunction(debouncedValue)
-        .then((results) => {
-          setSuggestions(results);
-          setShowSuggestions(true);
-        })
-        .catch(() => {
-          setSuggestions([]);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    } else {
-      setSuggestions([]);
-      setShowSuggestions(false);
-    }
-  }, [debouncedValue, searchFunction]);
-
-  const handleSelectSuggestion = (item: Airport) => {
-    setIsSelecting(true);
-    onSelect({ code: item.code, value: renderSuggestion(item) });
-    setSuggestions([]);
-    setShowSuggestions(false);
-  };
-
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    setTimeout(() => {
-      const relatedTarget = e.relatedTarget as HTMLElement;
-      if (
-        !relatedTarget ||
-        !relatedTarget.closest(SuggestionsList.styledComponentId as string)
-      ) {
-        setShowSuggestions(false);
-      }
-    }, 100);
-  };
+  const {
+    suggestions,
+    loading,
+    showSuggestions,
+    setShowSuggestions,
+    handleSelectSuggestion,
+    handleBlur,
+  } = useAutoCompleteInput(
+    value,
+    debounceTime,
+    searchFunction,
+    onSelect,
+    renderSuggestion
+  );
 
   return (
-    <AutocompleteContainer>
+    <AutoCompleteInputContainer>
       <Input
         id={id}
         type="text"
@@ -108,8 +73,8 @@ function AutocompleteInput({
           ))}
         </SuggestionsList>
       )}
-    </AutocompleteContainer>
+    </AutoCompleteInputContainer>
   );
 }
 
-export default AutocompleteInput;
+export default AutoCompleteInput;

@@ -9,8 +9,8 @@ import {
   Route,
   RouteDetails,
 } from "./FlightResultsStyle";
-import type { FlightBoundaries } from "../../context/FlightSearchContext";
 import { calculateDuration } from "../../utils/calculateDuration";
+import type { FlightBoundaries } from "../../store/flightSearchStore";
 
 interface FlightDetailsCardProps {
   flightLeg: FlightBoundaries;

@@ -26,10 +26,10 @@ const NumberInputControl: React.FC<NumberInputControlProps> = ({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let inputValue = e.target.value;
-    inputValue = inputValue.replace(/[^0-9]/g, ""); // Allow only digits
+    inputValue = inputValue.replace(/[^0-9]/g, "");
 
     if (inputValue === "") {
-      onChange(min); // Set to min value if empty
+      onChange(min);
     } else {
       const numValue = Number(inputValue);
       onChange(numValue);
