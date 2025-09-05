@@ -5,15 +5,15 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from "axios";
 
-interface ApiClientConfig {
+interface ApiConfig {
   baseURL: string;
   headers?: Record<string, string>;
 }
 
-const ApiClientFactory = (config: ApiClientConfig): AxiosInstance => {
-  const apiClient: AxiosInstance = axios.create(config);
+const ApiFactory = (config: ApiConfig): AxiosInstance => {
+  const api: AxiosInstance = axios.create(config);
 
-  apiClient.interceptors.request.use(
+  api.interceptors.request.use(
     (request: InternalAxiosRequestConfig) => {
       console.log("API Request:", {
         method: request.method,
@@ -30,7 +30,7 @@ const ApiClientFactory = (config: ApiClientConfig): AxiosInstance => {
     }
   );
 
-  apiClient.interceptors.response.use(
+  api.interceptors.response.use(
     (response: AxiosResponse) => {
       console.log("API Response:", {
         status: response.status,
@@ -63,7 +63,7 @@ const ApiClientFactory = (config: ApiClientConfig): AxiosInstance => {
     }
   );
 
-  return apiClient;
+  return api;
 };
 
-export default ApiClientFactory;
+export default ApiFactory;

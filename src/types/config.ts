@@ -1,4 +1,7 @@
-// Define the type for the configuration
+import type { Airport } from "./common";
+import type { FlightResult } from "../context/FlightSearchContext";
+import type { SearchState } from "./search";
+
 export interface AppConfig {
   appName: string;
   theme: {
@@ -15,11 +18,7 @@ export interface AppConfig {
     flightSearch: string;
   };
   services: {
-    searchAirports: (
-      query: string
-    ) => Promise<import("../services/airportService").Airport[]>;
-    searchFlights: (
-      searchState: import("../types/search").SearchState
-    ) => Promise<import("../services/flightService").FlightResult[]>;
+    searchAirports: (query: string) => Promise<Airport[]>;
+    searchFlights: (searchState: SearchState) => Promise<FlightResult[]>;
   };
 }

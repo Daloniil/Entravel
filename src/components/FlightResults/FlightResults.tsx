@@ -1,5 +1,5 @@
 import React from "react";
-import type { FlightResult } from "../../services/flightService";
+import { useFlightSearch } from "../../context/FlightSearchContext";
 import {
   NoResultsMessage,
   ResultsContainer,
@@ -14,12 +14,9 @@ import {
   LoadingMessage,
 } from "./FlightResultsStyle";
 
-interface FlightResultsProps {
-  results: FlightResult[];
-  loading: boolean;
-}
+const FlightResults: React.FC = () => {
+  const { flights: results, loading } = useFlightSearch();
 
-const FlightResults: React.FC<FlightResultsProps> = ({ results, loading }) => {
   if (loading) {
     return <LoadingMessage>Searching for flights...</LoadingMessage>;
   }

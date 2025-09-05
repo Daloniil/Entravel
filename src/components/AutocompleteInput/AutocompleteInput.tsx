@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import useDebounce from "../../hooks/useDebounce";
 import {
   AutocompleteContainer,
   Input,
@@ -30,52 +31,49 @@ function AutocompleteInput<T>({
   const [suggestions, setSuggestions] = useState<T[]>([]);
   const [loading, setLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isSelecting, setIsSelecting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const debouncedSearch = useCallback(
-    (query: string) => {
-      const handler = setTimeout(async () => {
-        if (query.length > 0) {
-          setLoading(true);
-          try {
-            const results = await searchFunction(query);
-            setSuggestions(results);
-            setShowSuggestions(true);
-          } catch (error) {
-            console.error("Autocomplete search failed:", error);
-            setSuggestions([]);
-          } finally {
-            setLoading(false);
-          }
-        } else {
-          setSuggestions([]);
-          setShowSuggestions(false);
-        }
-      }, debounceTime);
-
-      return () => {
-        clearTimeout(handler);
-      };
-    },
-    [searchFunction, debounceTime]
-  );
+  const debouncedValue = useDebounce(value, debounceTime);
 
   useEffect(() => {
-    debouncedSearch(value);
-  }, [value, debouncedSearch]);
+    if (isSelecting) {
+      setIsSelecting(false);
+      return;
+    }
+
+    if (debouncedValue.length > 0) {
+      setLoading(true);
+      searchFunction(debouncedValue)
+        .then((results) => {
+          setSuggestions(results);
+          setShowSuggestions(true);
+        })
+        .catch(() => {
+          setSuggestions([]);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  }, [debouncedValue, searchFunction]);
 
   const handleSelectSuggestion = (item: T) => {
+    setIsSelecting(true);
     onSelect(renderSuggestion(item));
     setSuggestions([]);
     setShowSuggestions(false);
   };
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    // Delay hiding suggestions to allow click on suggestion item
     setTimeout(() => {
+      const relatedTarget = e.relatedTarget as HTMLElement;
       if (
-        !e.relatedTarget ||
-        !e.relatedTarget.closest(SuggestionsList.styledComponentId as string)
+        !relatedTarget ||
+        !relatedTarget.closest(SuggestionsList.styledComponentId as string)
       ) {
         setShowSuggestions(false);
       }

@@ -1,30 +1,51 @@
 import React from "react";
-import { useSearch } from "../../hooks/useSearch";
-import type { FlightType, FlightClass } from "../../types/search";
-import { searchAirports } from "../../services/airportService";
-import type { Airport } from "../../services/airportService";
+import { FlightClass, FlightType } from "../../types/search";
+import { useAirportSearch } from "../../context/AirportSearchContext";
+import type { Airport } from "../../types/common";
 import AutocompleteInput from "../AutocompleteInput/AutocompleteInput";
 import Dropdown from "../Dropdown/Dropdown";
-import DatePicker from "../DatePicker/DatePicker"; // Import DatePicker
+import DatePicker from "../DatePicker/DatePicker";
 import {
   SearchBarContainer,
-  InputGroup, // Keep InputGroup for other sections
-  Label, // Keep Label for other sections
+  InputGroup,
+  Label,
   Button,
 } from "./SearchBarStyle";
-import PassengerInput from "../PassengerInput/PassengerInput"; // Import PassengerInput
+import PassengerInput from "../PassengerInput/PassengerInput";
+import { useFlightSearch } from "../../context/FlightSearchContext";
+import { isFlightType } from "../../utils/isFlightType";
+import { isFlightClass } from "../../utils/isFlightClass";
 
 const SearchBar: React.FC = () => {
-  const { searchState, updateSearchState } = useSearch();
+  const { searchAirports } = useAirportSearch();
+  const { filter, updateFilter, fetchFlights } = useFlightSearch();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
-    updateSearchState({ [id]: value });
+    updateFilter({ [id]: value });
   };
 
-  const handleSearch = () => {
-    console.log("Search initiated with state:", searchState);
+  const handleAutocompleteSelect = (id: string, value: string) => {
+    updateFilter({ [id]: value });
   };
+
+  const handleDateChange = (id: string, value: string) => {
+    updateFilter({ [id]: value });
+  };
+
+  const handleDropdownChange = (id: string, value: string) => {
+    if (isFlightType(id)) {
+      updateFilter({ flightType: value as FlightType });
+    } else if (isFlightClass(id)) {
+      updateFilter({ flightClass: value as FlightClass });
+    }
+  };
+
+  const handlePassengerChange = (type: string, value: number) => {
+    updateFilter({ [type]: value });
+  };
+
+  const handleSearch = () => fetchFlights();
 
   return (
     <SearchBarContainer>
@@ -32,10 +53,8 @@ const SearchBar: React.FC = () => {
         <Label>Flight Type</Label>
         <Dropdown
           id="flight-type"
-          value={searchState.flightType}
-          onChange={(value) =>
-            updateSearchState({ flightType: value as FlightType })
-          }
+          value={filter.flightType}
+          onChange={(value) => handleDropdownChange("flight-type", value)}
           options={[
             { value: "round-trip", label: "Round-trip" },
             { value: "one-way", label: "One-way" },
@@ -47,10 +66,8 @@ const SearchBar: React.FC = () => {
         <Label htmlFor="flight-class">Flight Class</Label>
         <Dropdown
           id="flight-class"
-          value={searchState.flightClass}
-          onChange={(value) =>
-            updateSearchState({ flightClass: value as FlightClass })
-          }
+          value={filter.flightClass}
+          onChange={(value) => handleDropdownChange("flight-class", value)}
           options={[
             { value: "economy", label: "Economy" },
             { value: "business", label: "Business" },
@@ -64,9 +81,9 @@ const SearchBar: React.FC = () => {
         <AutocompleteInput
           id="from"
           placeholder="Departure city"
-          value={searchState.from}
+          value={filter.from}
           onChange={handleInputChange}
-          onSelect={(value) => updateSearchState({ from: value })}
+          onSelect={(value) => handleAutocompleteSelect("from", value)}
           searchFunction={searchAirports}
           renderSuggestion={(airport: Airport) =>
             `${airport.city} (${airport.code}) - ${airport.name}`
@@ -79,9 +96,9 @@ const SearchBar: React.FC = () => {
         <AutocompleteInput
           id="to"
           placeholder="Arrival city"
-          value={searchState.to}
+          value={filter.to}
           onChange={handleInputChange}
-          onSelect={(value) => updateSearchState({ to: value })}
+          onSelect={(value) => handleAutocompleteSelect("to", value)}
           searchFunction={searchAirports}
           renderSuggestion={(airport: Airport) =>
             `${airport.city} (${airport.code}) - ${airport.name}`
@@ -95,37 +112,34 @@ const SearchBar: React.FC = () => {
           id="departureDate"
           label="Departure Date"
           placeholder="Select Departure Date"
-          value={searchState.departureDate}
-          onChange={(value) => updateSearchState({ departureDate: value })}
+          value={filter.departureDate}
+          onChange={(value) => handleDateChange("departureDate", value)}
           min={new Date().toISOString().split("T")[0]}
-          max={searchState.returnDate || undefined}
+          max={filter.returnDate || undefined}
         />
       </InputGroup>
 
-      {searchState.flightType === "round-trip" && (
+      {filter.flightType === "round-trip" && (
         <InputGroup>
           <Label htmlFor="returnDate">Return Date</Label>
           <DatePicker
             id="returnDate"
             label="Return Date"
             placeholder="Select Return Date"
-            value={searchState.returnDate}
-            onChange={(value) => updateSearchState({ returnDate: value })}
-            min={
-              searchState.departureDate ||
-              new Date().toISOString().split("T")[0]
-            }
+            value={filter.returnDate}
+            onChange={(value) => handleDateChange("returnDate", value)}
+            min={filter.departureDate || new Date().toISOString().split("T")[0]}
           />
         </InputGroup>
       )}
 
       <PassengerInput
-        adults={searchState.adults}
-        children={searchState.children}
-        infants={searchState.infants}
-        onAdultsChange={(value) => updateSearchState({ adults: value })}
-        onChildrenChange={(value) => updateSearchState({ children: value })}
-        onInfantsChange={(value) => updateSearchState({ infants: value })}
+        adults={filter.adults}
+        children={filter.children}
+        infants={filter.infants}
+        onAdultsChange={(value) => handlePassengerChange("adults", value)}
+        onChildrenChange={(value) => handlePassengerChange("children", value)}
+        onInfantsChange={(value) => handlePassengerChange("infants", value)}
       />
 
       <Button onClick={handleSearch}>Search Flights</Button>

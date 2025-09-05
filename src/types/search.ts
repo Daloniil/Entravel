@@ -1,6 +1,12 @@
-// 1. Define the types for the search state
-export type FlightType = "round-trip" | "one-way";
-export type FlightClass = "economy" | "business" | "first";
+export enum FlightType {
+  ROUND_TRIP = "round-trip",
+  ONE_WAY = "one-way",
+}
+export enum FlightClass {
+  ECONOMY = "economy",
+  BUSINESS = "business",
+  FIRST = "first",
+}
 
 export interface SearchState {
   flightType: FlightType;
@@ -20,10 +26,9 @@ export interface SearchContextType {
   updateSearchState: (updates: Partial<SearchState>) => void;
 }
 
-// Initial state for the search form
 export const initialSearchState: SearchState = {
-  flightType: "round-trip",
-  flightClass: "economy",
+  flightType: FlightType.ROUND_TRIP,
+  flightClass: FlightClass.ECONOMY,
   from: "",
   to: "",
   departureDate: "",
