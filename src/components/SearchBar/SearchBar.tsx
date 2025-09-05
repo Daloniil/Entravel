@@ -63,7 +63,7 @@ const SearchBar: React.FC = () => {
           placeholder="Departure city"
           value={filter.from}
           onChange={handleInputChange}
-          onSelect={(value) => {
+          onSelect={(value: { code: string; value: string }) => {
             handleChangeFilter("from", value.value);
             handleChangeFilter("fromCode", value.code);
           }}
@@ -81,7 +81,7 @@ const SearchBar: React.FC = () => {
           placeholder="Arrival city"
           value={filter.to}
           onChange={handleInputChange}
-          onSelect={(value) => {
+          onSelect={(value: { code: string; value: string }) => {
             handleChangeFilter("to", value.value);
             handleChangeFilter("toCode", value.code);
           }}
