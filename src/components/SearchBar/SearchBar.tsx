@@ -15,7 +15,7 @@ import PassengerInput from "../PassengerInput/PassengerInput";
 import { useFlightSearchStore } from "../../store/flightSearchStore";
 import { FLIGHT_TYPE_OPTIONS } from "../../utils/constants";
 import { FLIGHT_CLASS_OPTIONS } from "../../utils/constants";
-import AutoCompleteInput from "../AutoCompleteInput/AutoCompleteInput";
+import AutoCompleteInput from "../AutoCompleteInput/AutoCompleteInput.tsx";
 import { useSearchBar } from "./useSearchBar";
 
 const SearchBar: React.FC = () => {
