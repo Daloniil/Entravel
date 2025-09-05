@@ -10,7 +10,7 @@ import {
   Label,
   Button,
   SearchButtonContainer,
-} from "./SearchBarStyle";
+} from "./SearchBarStyle.ts";
 import PassengerInput from "../PassengerInput/PassengerInput";
 import { useFlightSearchStore } from "../../store/flightSearchStore";
 import { FLIGHT_TYPE_OPTIONS } from "../../utils/constants";

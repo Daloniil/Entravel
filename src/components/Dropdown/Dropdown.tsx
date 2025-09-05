@@ -5,7 +5,7 @@ import {
   DropdownIcon,
   DropdownList,
   DropdownItem,
-} from "./DropdownStyle";
+} from "./DropdownStyle.ts";
 
 interface CustomSelectProps {
   options: { value: string; label: string }[];

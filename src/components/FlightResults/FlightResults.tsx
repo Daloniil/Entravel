@@ -6,7 +6,7 @@ import {
   ResultItem,
   Price,
   LoadingMessage,
-} from "./FlightResultsStyle";
+} from "./FlightResultsStyle.ts";
 import FlightDetailsCard from "./FlightDetailsCard";
 
 const FlightResults: React.FC = () => {

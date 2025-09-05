@@ -1,5 +1,5 @@
 import React from "react";
-import { DatePickerWrapper, StyledDateInput } from "./DatePickerStyle";
+import { DatePickerWrapper, StyledDateInput } from "./DatePickerStyle.ts";
 
 interface DatePickerProps {
   id: string;

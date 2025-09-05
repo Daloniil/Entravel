@@ -8,7 +8,7 @@ import {
   Duration,
   Route,
   RouteDetails,
-} from "./FlightResultsStyle";
+} from "./FlightResultsStyle.ts";
 import { calculateDuration } from "../../utils/calculateDuration";
 import type { FlightBoundaries } from "../../store/flightSearchStore";
 
