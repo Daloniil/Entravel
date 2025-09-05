@@ -16,7 +16,7 @@ function App() {
       <Compose components={[]}>
         <GlobalStyles />
         <Routes>
-          <Route path="/findTickets" element={<FindTickets />} />
+          <Route path="/" element={<FindTickets />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Compose>
