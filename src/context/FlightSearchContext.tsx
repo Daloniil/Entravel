@@ -9,7 +9,7 @@ import type { SearchState } from "../types/search";
 import { FlightType, initialSearchState } from "../types/search";
 import { travelService } from "../services/travelService";
 
-interface FlightBoundaries {
+export interface FlightBoundaries {
   airline: string;
   flightNumber: string;
   departureAirport: string;

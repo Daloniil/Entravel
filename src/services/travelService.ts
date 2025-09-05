@@ -3,84 +3,16 @@ import type { Airport } from "../types/common";
 import type { FlightResult } from "../context/FlightSearchContext";
 import { FlightType } from "../types/search";
 
-interface FlightSearchParams {
-  origin: string;
-  destination: string;
-  departureDate: string;
-  returnDate?: string;
-  adults: number;
-  children: number;
-  infants: number;
-  cabinClass: string;
-  flightType: FlightType;
-}
+import type { FlightSearchParams } from "./types";
+import type { KiwiFlightResult } from "./types";
+import type { SkyscannerPlaceResult } from "./types";
 
-interface KiwiStation {
-  name: string;
-  station: { name: string; city: { name: string } };
-  localTime: string;
-}
-
-interface KiwiCarrier {
-  name: string;
-}
-
-interface KiwiSegment {
-  carrier: KiwiCarrier;
-  code: string;
-  source: KiwiStation;
-  destination: KiwiStation;
-  localTime: string;
-  duration: number;
-}
-
-interface KiwiSectorSegment {
-  segment: KiwiSegment;
-}
-
-interface KiwiFlightResult {
-  id: string;
-  outbound: {
-    sectorSegments: KiwiSectorSegment[];
-  };
-  inbound: {
-    sectorSegments: KiwiSectorSegment[];
-  };
-  price: {
-    amount: string;
-  };
-}
-
-interface SkyscannerPlaceResult {
-  presentation: {
-    title: string;
-    suggestionTitle: string;
-    subtitle: string;
-    id: string;
-    skyId: string;
-  };
-  navigation: {
-    entityType: string;
-    localizedName: string;
-    relevantFlightParams: {
-      skyId: string;
-      flightPlaceType: string;
-      localizedName: string;
-    };
-    relevantHotelParams: {
-      entityType: string;
-      localizedName: string;
-    };
-  };
-}
-
-const KIWI_API_KEY = import.meta.env.VITE_KIWI_API_KEY;
-const KIWI_BASE_URL = "https://kiwi-com-cheap-flights.p.rapidapi.com";
-const KIWI_API_HOST = "kiwi-com-cheap-flights.p.rapidapi.com";
-
-const FLIGHTS_SKY_API_KEY = import.meta.env.VITE_FLIGHTS_SKY_API_KEY;
-const FLIGHTS_SKY_BASE_URL = "https://flights-sky.p.rapidapi.com";
-const FLIGHTS_SKY_API_HOST = "flights-sky.p.rapidapi.com";
+import { KIWI_API_KEY, KIWI_BASE_URL, KIWI_API_HOST } from "../utils/constants";
+import {
+  FLIGHTS_SKY_API_KEY,
+  FLIGHTS_SKY_BASE_URL,
+  FLIGHTS_SKY_API_HOST,
+} from "../utils/constants";
 
 const kiwiApiClient = ApiFactory({
   baseURL: KIWI_BASE_URL,
@@ -91,7 +23,7 @@ const kiwiApiClient = ApiFactory({
   },
 });
 
-const skyscannerApiClient = ApiFactory({
+const flightsSkyApiClient = ApiFactory({
   baseURL: FLIGHTS_SKY_BASE_URL,
   headers: {
     "X-RapidAPI-Key": FLIGHTS_SKY_API_KEY,
@@ -138,45 +70,81 @@ export const travelService = {
         contentProviders: "FLIXBUS_DIRECTS,FRESH,KAYAK,KIWI",
       };
 
-      const dateFrom = params.departureDate;
-      const dateTo = params.returnDate || params.departureDate;
+      // const dateFrom = params.departureDate;
+      // const dateTo = params.returnDate || params.departureDate;
 
-      const kiwiParams = {
-        ...requestParams,
-        dateFrom: dateFrom,
-        ...(params.flightType === FlightType.ROUND_TRIP && { dateTo: dateTo }),
-      };
+      // const kiwiParams = {
+      //   ...requestParams,
+      //   dateFrom: dateFrom,
+      //   ...(params.flightType === FlightType.ROUND_TRIP && { dateTo: dateTo }),
+      // };
 
       const response = await kiwiApiClient.get(endpoint, {
-        params: kiwiParams,
+        params: requestParams,
       });
 
       const mappedResults: FlightResult[] = response.data.itineraries.map(
         (itinerary: KiwiFlightResult) => ({
           id: itinerary.id,
           outbound: {
-            airline: itinerary.outbound.sectorSegments[0].segment.carrier.name,
-            flightNumber: itinerary.outbound.sectorSegments[0].segment.code,
-            departureAirport: `${itinerary.outbound.sectorSegments[0].segment.source.station.city.name} – ${itinerary.outbound.sectorSegments[0].segment.source.station.name}`,
-            arrivalAirport: `${itinerary.outbound.sectorSegments[0].segment.destination.station.city.name} - ${itinerary.outbound.sectorSegments[0].segment.destination.station.name}`,
-            departureTime:
-              itinerary.outbound.sectorSegments[0].segment.source.localTime,
-            arrivalTime:
-              itinerary.outbound.sectorSegments[0].segment.destination
-                .localTime,
-            duration: itinerary.outbound.sectorSegments[0].segment.duration,
+            airline: itinerary.outbound
+              ? itinerary.outbound.sectorSegments[0].segment.carrier.name
+              : itinerary.sector.sectorSegments[0].segment.carrier.name,
+            flightNumber: itinerary.outbound
+              ? itinerary.outbound.sectorSegments[0].segment.code
+              : itinerary.sector.sectorSegments[0].segment.code,
+            departureAirport: `${
+              itinerary.outbound
+                ? itinerary.outbound.sectorSegments[0].segment.source.station
+                    .city.name
+                : itinerary.sector.sectorSegments[0].segment.source.station.city
+                    .name
+            } – ${
+              itinerary.outbound
+                ? itinerary.outbound.sectorSegments[0].segment.source.station
+                    .name
+                : itinerary.sector.sectorSegments[0].segment.source.station.name
+            }`,
+            arrivalAirport: `${
+              itinerary.outbound
+                ? itinerary.outbound.sectorSegments[0].segment.destination
+                    .station.city.name
+                : itinerary.sector.sectorSegments[0].segment.destination.station
+                    .city.name
+            } - ${
+              itinerary.outbound
+                ? itinerary.outbound.sectorSegments[0].segment.destination
+                    .station.name
+                : itinerary.sector.sectorSegments[0].segment.destination.station
+                    .name
+            }`,
+            departureTime: itinerary.outbound
+              ? itinerary.outbound.sectorSegments[0].segment.source.localTime
+              : itinerary.sector.sectorSegments[0].segment.source.localTime,
+            arrivalTime: itinerary.outbound
+              ? itinerary.outbound.sectorSegments[0].segment.destination
+                  .localTime
+              : itinerary.sector.sectorSegments[0].segment.destination
+                  .localTime,
+            duration: itinerary.outbound
+              ? itinerary.outbound.sectorSegments[0].segment.duration
+              : itinerary.sector.sectorSegments[0].segment.duration,
           },
-          inbound: {
-            airline: itinerary.inbound.sectorSegments[0].segment.carrier.name,
-            flightNumber: itinerary.inbound.sectorSegments[0].segment.code,
-            departureAirport: `${itinerary.inbound.sectorSegments[0].segment.source.station.city.name} – ${itinerary.inbound.sectorSegments[0].segment.source.station.name}`,
-            arrivalAirport: `${itinerary.inbound.sectorSegments[0].segment.destination.station.city.name} - ${itinerary.inbound.sectorSegments[0].segment.destination.station.name}`,
-            departureTime:
-              itinerary.inbound.sectorSegments[0].segment.source.localTime,
-            arrivalTime:
-              itinerary.inbound.sectorSegments[0].segment.destination.localTime,
-            duration: itinerary.inbound.sectorSegments[0].segment.duration,
-          },
+          inbound: itinerary.inbound
+            ? {
+                airline:
+                  itinerary.inbound.sectorSegments[0].segment.carrier.name,
+                flightNumber: itinerary.inbound.sectorSegments[0].segment.code,
+                departureAirport: `${itinerary.inbound.sectorSegments[0].segment.source.station.city.name} – ${itinerary.inbound.sectorSegments[0].segment.source.station.name}`,
+                arrivalAirport: `${itinerary.inbound.sectorSegments[0].segment.destination.station.city.name} - ${itinerary.inbound.sectorSegments[0].segment.destination.station.name}`,
+                departureTime:
+                  itinerary.inbound.sectorSegments[0].segment.source.localTime,
+                arrivalTime:
+                  itinerary.inbound.sectorSegments[0].segment.destination
+                    .localTime,
+                duration: itinerary.inbound.sectorSegments[0].segment.duration,
+              }
+            : undefined,
           price: parseFloat(itinerary.price.amount),
         })
       );
@@ -195,7 +163,7 @@ export const travelService = {
 
     try {
       const endpoint = "/flights/auto-complete";
-      const response = await skyscannerApiClient.get(endpoint, {
+      const response = await flightsSkyApiClient.get(endpoint, {
         params: { query },
       });
 

@@ -9,10 +9,11 @@ import {
   Route,
   RouteDetails,
 } from "./FlightResultsStyle";
-import { FlightLeg } from "../../types/search";
+import type { FlightBoundaries } from "../../context/FlightSearchContext";
+import { calculateDuration } from "../../utils/calculateDuration";
 
 interface FlightDetailsCardProps {
-  flightLeg: FlightLeg;
+  flightLeg: FlightBoundaries;
 }
 
 const FlightDetailsCard: React.FC<FlightDetailsCardProps> = ({ flightLeg }) => {
@@ -23,11 +24,7 @@ const FlightDetailsCard: React.FC<FlightDetailsCardProps> = ({ flightLeg }) => {
         <FlightNumber>{flightLeg.flightNumber}</FlightNumber>
       </FlightInfo>
       <RouteDetails>
-        <Duration>
-          {`${Math.floor(flightLeg.duration / 3600)} hours ${Math.floor(
-            (flightLeg.duration % 3600) / 60
-          )} minutes`}
-        </Duration>
+        <Duration>{calculateDuration(flightLeg.duration)}</Duration>
         <Route>
           {flightLeg.departureAirport} &rarr; {flightLeg.arrivalAirport}
         </Route>

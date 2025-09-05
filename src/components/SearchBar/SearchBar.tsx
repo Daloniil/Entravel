@@ -1,5 +1,5 @@
 import React from "react";
-import { FlightClass, FlightType } from "../../types/search";
+import { FlightType } from "../../types/search";
 import { useAirportSearch } from "../../context/AirportSearchContext";
 import type { Airport } from "../../types/common";
 import AutocompleteInput from "../AutocompleteInput/AutocompleteInput";
@@ -13,8 +13,8 @@ import {
 } from "./SearchBarStyle";
 import PassengerInput from "../PassengerInput/PassengerInput";
 import { useFlightSearch } from "../../context/FlightSearchContext";
-import { isFlightType } from "../../utils/isFlightType";
-import { isFlightClass } from "../../utils/isFlightClass";
+import { FLIGHT_TYPE_OPTIONS } from "../../utils/constants";
+import { FLIGHT_CLASS_OPTIONS } from "../../utils/constants";
 
 const SearchBar: React.FC = () => {
   const { searchAirports } = useAirportSearch();
@@ -25,23 +25,7 @@ const SearchBar: React.FC = () => {
     updateFilter({ [id]: value });
   };
 
-  const handleAutocompleteSelect = (id: string, value: string) => {
-    updateFilter({ [id]: value });
-  };
-
-  const handleDateChange = (id: string, value: string) => {
-    updateFilter({ [id]: value });
-  };
-
-  const handleDropdownChange = (id: string, value: string) => {
-    if (isFlightType(id)) {
-      updateFilter({ flightType: value as FlightType });
-    } else if (isFlightClass(id)) {
-      updateFilter({ flightClass: value as FlightClass });
-    }
-  };
-
-  const handlePassengerChange = (type: string, value: number) => {
+  const handleChangeFilter = (type: string, value: string) => {
     updateFilter({ [type]: value });
   };
 
@@ -54,11 +38,8 @@ const SearchBar: React.FC = () => {
         <Dropdown
           id="flight-type"
           value={filter.flightType}
-          onChange={(value) => handleDropdownChange("flight-type", value)}
-          options={[
-            { value: "round-trip", label: "Round-trip" },
-            { value: "one-way", label: "One-way" },
-          ]}
+          onChange={(value) => handleChangeFilter("flightType", value)}
+          options={FLIGHT_TYPE_OPTIONS}
         />
       </InputGroup>
 
@@ -67,12 +48,8 @@ const SearchBar: React.FC = () => {
         <Dropdown
           id="flight-class"
           value={filter.flightClass}
-          onChange={(value) => handleDropdownChange("flight-class", value)}
-          options={[
-            { value: "economy", label: "Economy" },
-            { value: "business", label: "Business" },
-            { value: "first", label: "First" },
-          ]}
+          onChange={(value) => handleChangeFilter("flightClass", value)}
+          options={FLIGHT_CLASS_OPTIONS}
         />
       </InputGroup>
 
@@ -84,8 +61,8 @@ const SearchBar: React.FC = () => {
           value={filter.from}
           onChange={handleInputChange}
           onSelect={(value) => {
-            handleAutocompleteSelect("from", value.value);
-            handleAutocompleteSelect("fromCode", value.code);
+            handleChangeFilter("from", value.value);
+            handleChangeFilter("fromCode", value.code);
           }}
           searchFunction={searchAirports}
           renderSuggestion={(airport: Airport) =>
@@ -102,8 +79,8 @@ const SearchBar: React.FC = () => {
           value={filter.to}
           onChange={handleInputChange}
           onSelect={(value) => {
-            handleAutocompleteSelect("to", value.value);
-            handleAutocompleteSelect("toCode", value.code);
+            handleChangeFilter("to", value.value);
+            handleChangeFilter("toCode", value.code);
           }}
           searchFunction={searchAirports}
           renderSuggestion={(airport: Airport) =>
@@ -119,13 +96,13 @@ const SearchBar: React.FC = () => {
           label="Departure Date"
           placeholder="Select Departure Date"
           value={filter.departureDate}
-          onChange={(value) => handleDateChange("departureDate", value)}
+          onChange={(value) => handleChangeFilter("departureDate", value)}
           min={new Date().toISOString().split("T")[0]}
           max={filter.returnDate || undefined}
         />
       </InputGroup>
 
-      {filter.flightType === "round-trip" && (
+      {filter.flightType === FlightType.ROUND_TRIP && (
         <InputGroup>
           <Label htmlFor="returnDate">Return Date</Label>
           <DatePicker
@@ -133,7 +110,7 @@ const SearchBar: React.FC = () => {
             label="Return Date"
             placeholder="Select Return Date"
             value={filter.returnDate}
-            onChange={(value) => handleDateChange("returnDate", value)}
+            onChange={(value) => handleChangeFilter("returnDate", value)}
             min={filter.departureDate || new Date().toISOString().split("T")[0]}
           />
         </InputGroup>
@@ -143,9 +120,15 @@ const SearchBar: React.FC = () => {
         adults={filter.adults}
         children={filter.children}
         infants={filter.infants}
-        onAdultsChange={(value) => handlePassengerChange("adults", value)}
-        onChildrenChange={(value) => handlePassengerChange("children", value)}
-        onInfantsChange={(value) => handlePassengerChange("infants", value)}
+        onAdultsChange={(value) =>
+          handleChangeFilter("adults", value.toString())
+        }
+        onChildrenChange={(value) =>
+          handleChangeFilter("children", value.toString())
+        }
+        onInfantsChange={(value) =>
+          handleChangeFilter("infants", value.toString())
+        }
       />
 
       <Button onClick={handleSearch}>Search Flights</Button>
