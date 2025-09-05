@@ -1,69 +1,107 @@
-# React + TypeScript + Vite
+# Entravel - Flight Search
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## About the Project
 
-Currently, two official plugins are available:
+Entravel is a simple flight search application developed using React, TypeScript, and Vite. It allows users to search for flights by selecting flight type (one-way or round-trip), flight class, departure and arrival cities, departure and return dates, and the number of passengers.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The application uses the real Kiwi API (via RapidAPI) to retrieve flight data, demonstrating work with live requests.
 
-## Expanding the ESLint configuration
+## Functionality
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Flight Search:** Select departure and arrival cities, dates, flight type, and class.
+- **Passenger Selection:** Specify the number of adults, children, and infants.
+- **Filtering:** Choose between one-way/round-trip flight types and flight classes (Economy, Business, etc.).
+- **Information Modal:** A modal window appears on the first launch of the application with important project information and potential API limitations.
+- **Clear Filters:** A button to reset all search parameters to their default values.
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Getting Started
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+Follow these instructions to get the project up and running:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/YOUR_USERNAME/entravel-app.git
+cd entravel-app
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Replace `YOUR_USERNAME` and `entravel-app` with your actual repository details.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### 2. Install Dependencies
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+# or
+yarn install
 ```
+
+### 3. Run the Application in Development Mode
+
+```bash
+npm run dev
+# or
+yarn dev
+```
+
+The application will be available at `http://localhost:5173` (or another port specified in the console).
+
+### 4. Create a Production Build
+
+```bash
+npm run build
+# or
+yarn build
+```
+
+This command will create a production-optimized build of your application in the `dist/` folder.
+
+### 5. Deploy to GitHub Pages
+
+1.  **Install `gh-pages`:**
+
+    ```bash
+    npm install gh-pages --save-dev
+    # or
+    yarn add gh-pages --dev
+    ```
+
+2.  **Configure `package.json`:**
+    Add the `homepage` field and `predeploy` and `deploy` scripts:
+
+    ```json
+    {
+      "name": "entravel",
+      "private": true,
+      "version": "0.0.0",
+      "type": "module",
+      "homepage": "https://YOUR_USERNAME.github.io/entravel-app",
+      "scripts": {
+        "dev": "vite",
+        "build": "tsc -b && vite build",
+        "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+        "preview": "vite preview",
+        "predeploy": "npm run build",
+        "deploy": "gh-pages -d dist"
+      },
+      "dependencies": {
+        // ... your dependencies ...
+      },
+      "devDependencies": {
+        "gh-pages": "^6.1.1"
+        // ... other devDependencies ...
+      }
+    }
+    ```
+
+    **Important:** Replace `YOUR_USERNAME` and `entravel-app` with your actual values.
+
+3.  **Deploy the Application:**
+
+    ```bash
+    npm run deploy
+    # or
+    yarn deploy
+    ```
+
+4.  **Configure GitHub Pages in the Repository:**
+    Go to `Settings` -> `Pages` on GitHub, select the `gh-pages` branch and the `/ (root)` folder for deployment.
