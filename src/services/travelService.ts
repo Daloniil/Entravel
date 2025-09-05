@@ -1,6 +1,7 @@
 import ApiFactory from "./api";
 import type { Airport } from "../types/common";
 import type { FlightResult } from "../context/FlightSearchContext";
+import { FlightType } from "../types/search";
 
 interface FlightSearchParams {
   origin: string;
@@ -11,18 +12,43 @@ interface FlightSearchParams {
   children: number;
   infants: number;
   cabinClass: string;
-  flightType: "round-trip" | "one-way";
+  flightType: FlightType;
+}
+
+interface KiwiStation {
+  name: string;
+  station: { name: string; city: { name: string } };
+  localTime: string;
+}
+
+interface KiwiCarrier {
+  name: string;
+}
+
+interface KiwiSegment {
+  carrier: KiwiCarrier;
+  code: string;
+  source: KiwiStation;
+  destination: KiwiStation;
+  localTime: string;
+  duration: number;
+}
+
+interface KiwiSectorSegment {
+  segment: KiwiSegment;
 }
 
 interface KiwiFlightResult {
   id: string;
-  airlines: string[];
-  flight_number: string;
-  flyFrom: string;
-  flyTo: string;
-  local_departure: string;
-  local_arrival: string;
-  price: number;
+  outbound: {
+    sectorSegments: KiwiSectorSegment[];
+  };
+  inbound: {
+    sectorSegments: KiwiSectorSegment[];
+  };
+  price: {
+    amount: string;
+  };
 }
 
 interface SkyscannerPlaceResult {
@@ -83,19 +109,33 @@ export const travelService = {
 
     try {
       const endpoint =
-        params.flightType === "round-trip" ? "/round-trip" : "/one-way";
+        params.flightType === FlightType.ROUND_TRIP
+          ? FlightType.ROUND_TRIP
+          : FlightType.ONE_WAY;
 
       const requestParams = {
-        source: `airport:${params.origin}`,
-        destination: `airport:${params.destination}`,
+        source: `${params.origin}`,
+        destination: `${params.destination}`,
         currency: "usd",
         locale: "en",
         adults: params.adults,
         children: params.children,
         infants: params.infants,
         cabinClass: params.cabinClass.toUpperCase(),
-
         limit: 20,
+        handbags: 1,
+        holdbags: 1,
+        sortBy: "DURATION",
+        sortOrder: "ASCENDING",
+        applyMixedClasses: false,
+        allowReturnFromDifferentCity: false,
+        allowChangeInboundDestination: false,
+        allowDifferentStationConnection: false,
+        enableSelfTransfer: false,
+        allowOvernightStopover: true,
+        enableThrowAwayTicketing: false,
+        transportTypes: "FLIGHT",
+        contentProviders: "FLIXBUS_DIRECTS,FRESH,KAYAK,KIWI",
       };
 
       const dateFrom = params.departureDate;
@@ -104,23 +144,40 @@ export const travelService = {
       const kiwiParams = {
         ...requestParams,
         dateFrom: dateFrom,
-        ...(params.flightType === "round-trip" && { dateTo: dateTo }),
+        ...(params.flightType === FlightType.ROUND_TRIP && { dateTo: dateTo }),
       };
 
       const response = await kiwiApiClient.get(endpoint, {
         params: kiwiParams,
       });
 
-      const mappedResults: FlightResult[] = response.data.data.map(
-        (flight: KiwiFlightResult) => ({
-          id: flight.id,
-          airline: flight.airlines[0] || "Unknown Airline",
-          flightNumber: flight.flight_number,
-          departureAirport: flight.flyFrom,
-          arrivalAirport: flight.flyTo,
-          departureTime: flight.local_departure,
-          arrivalTime: flight.local_arrival,
-          price: flight.price,
+      const mappedResults: FlightResult[] = response.data.itineraries.map(
+        (itinerary: KiwiFlightResult) => ({
+          id: itinerary.id,
+          outbound: {
+            airline: itinerary.outbound.sectorSegments[0].segment.carrier.name,
+            flightNumber: itinerary.outbound.sectorSegments[0].segment.code,
+            departureAirport: `${itinerary.outbound.sectorSegments[0].segment.source.station.city.name} – ${itinerary.outbound.sectorSegments[0].segment.source.station.name}`,
+            arrivalAirport: `${itinerary.outbound.sectorSegments[0].segment.destination.station.city.name} - ${itinerary.outbound.sectorSegments[0].segment.destination.station.name}`,
+            departureTime:
+              itinerary.outbound.sectorSegments[0].segment.source.localTime,
+            arrivalTime:
+              itinerary.outbound.sectorSegments[0].segment.destination
+                .localTime,
+            duration: itinerary.outbound.sectorSegments[0].segment.duration,
+          },
+          inbound: {
+            airline: itinerary.inbound.sectorSegments[0].segment.carrier.name,
+            flightNumber: itinerary.inbound.sectorSegments[0].segment.code,
+            departureAirport: `${itinerary.inbound.sectorSegments[0].segment.source.station.city.name} – ${itinerary.inbound.sectorSegments[0].segment.source.station.name}`,
+            arrivalAirport: `${itinerary.inbound.sectorSegments[0].segment.destination.station.city.name} - ${itinerary.inbound.sectorSegments[0].segment.destination.station.name}`,
+            departureTime:
+              itinerary.inbound.sectorSegments[0].segment.source.localTime,
+            arrivalTime:
+              itinerary.inbound.sectorSegments[0].segment.destination.localTime,
+            duration: itinerary.inbound.sectorSegments[0].segment.duration,
+          },
+          price: parseFloat(itinerary.price.amount),
         })
       );
       return mappedResults;

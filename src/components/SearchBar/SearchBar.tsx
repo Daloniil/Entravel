@@ -83,7 +83,10 @@ const SearchBar: React.FC = () => {
           placeholder="Departure city"
           value={filter.from}
           onChange={handleInputChange}
-          onSelect={(value) => handleAutocompleteSelect("from", value)}
+          onSelect={(value) => {
+            handleAutocompleteSelect("from", value.value);
+            handleAutocompleteSelect("fromCode", value.code);
+          }}
           searchFunction={searchAirports}
           renderSuggestion={(airport: Airport) =>
             `${airport.city} (${airport.code}) - ${airport.name}`
@@ -98,7 +101,10 @@ const SearchBar: React.FC = () => {
           placeholder="Arrival city"
           value={filter.to}
           onChange={handleInputChange}
-          onSelect={(value) => handleAutocompleteSelect("to", value)}
+          onSelect={(value) => {
+            handleAutocompleteSelect("to", value.value);
+            handleAutocompleteSelect("toCode", value.code);
+          }}
           searchFunction={searchAirports}
           renderSuggestion={(airport: Airport) =>
             `${airport.city} (${airport.code}) - ${airport.name}`

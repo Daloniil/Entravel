@@ -4,15 +4,10 @@ import {
   NoResultsMessage,
   ResultsContainer,
   ResultItem,
-  FlightNumber,
-  Airline,
-  Time,
   Price,
-  FlightInfo,
-  FlightDetails,
-  Route,
   LoadingMessage,
 } from "./FlightResultsStyle";
+import FlightDetailsCard from "./FlightDetailsCard";
 
 const FlightResults: React.FC = () => {
   const { flights: results, loading } = useFlightSearch();
@@ -34,19 +29,8 @@ const FlightResults: React.FC = () => {
       <h2>Flight Results</h2>
       {results.map((flight) => (
         <ResultItem key={flight.id}>
-          <FlightDetails>
-            <FlightInfo>
-              <Airline>{flight.airline}</Airline>
-              <FlightNumber>{flight.flightNumber}</FlightNumber>
-            </FlightInfo>
-            <Route>
-              {flight.departureAirport} &rarr; {flight.arrivalAirport}
-            </Route>
-            <FlightInfo style={{ textAlign: "right" }}>
-              <Time>{new Date(flight.departureTime).toLocaleString()}</Time>
-              <Time>{new Date(flight.arrivalTime).toLocaleString()}</Time>
-            </FlightInfo>
-          </FlightDetails>
+          <FlightDetailsCard flightLeg={flight.outbound} />
+          {flight.inbound && <FlightDetailsCard flightLeg={flight.inbound} />}
           <Price>${flight.price.toFixed(2)}</Price>
         </ResultItem>
       ))}

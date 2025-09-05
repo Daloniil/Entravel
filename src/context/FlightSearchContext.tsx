@@ -6,17 +6,23 @@ import React, {
   type ReactNode,
 } from "react";
 import type { SearchState } from "../types/search";
-import { initialSearchState } from "../types/search";
+import { FlightType, initialSearchState } from "../types/search";
 import { travelService } from "../services/travelService";
 
-export interface FlightResult {
-  id: string;
+interface FlightBoundaries {
   airline: string;
   flightNumber: string;
   departureAirport: string;
   arrivalAirport: string;
   departureTime: string;
   arrivalTime: string;
+  duration: number;
+}
+
+export interface FlightResult {
+  id: string;
+  inbound?: FlightBoundaries;
+  outbound: FlightBoundaries;
   price: number;
 }
 
@@ -55,11 +61,13 @@ export const FlightSearchProvider: React.FC<FlightSearchProviderProps> = ({
     setError(null);
     try {
       const kiwiParams = {
-        origin: filter.from || "",
-        destination: filter.to || "",
+        origin: filter.fromCode || "",
+        destination: filter.toCode || "",
         departureDate: filter.departureDate || "",
         returnDate:
-          filter.flightType === "round-trip" ? filter.returnDate : undefined,
+          filter.flightType === FlightType.ROUND_TRIP
+            ? filter.returnDate
+            : undefined,
         adults: filter.adults,
         children: filter.children,
         infants: filter.infants,
@@ -69,30 +77,7 @@ export const FlightSearchProvider: React.FC<FlightSearchProviderProps> = ({
 
       const kiwiResults = await travelService.searchFlights(kiwiParams);
 
-      interface KiwiFlightResult {
-        id?: string;
-        airlines?: string[];
-        flight_number?: string;
-        flyFrom?: string;
-        flyTo?: string;
-        local_departure?: string;
-        local_arrival?: string;
-        price?: number;
-      }
-
-      const mappedResults: FlightResult[] = kiwiResults.map(
-        (flight: KiwiFlightResult) => ({
-          id: flight.id || Math.random().toString(36).substring(7),
-          airline: flight.airlines?.[0] || "Unknown Airline",
-          flightNumber: flight.flight_number || "N/A",
-          departureAirport: flight.flyFrom || kiwiParams.origin,
-          arrivalAirport: flight.flyTo || kiwiParams.destination,
-          departureTime: flight.local_departure || kiwiParams.departureDate,
-          arrivalTime: flight.local_arrival || "N/A",
-          price: flight.price || 0,
-        })
-      );
-      setFlights(mappedResults);
+      setFlights(kiwiResults);
     } catch (err) {
       console.error("Failed to fetch flights:", err);
       setError("Failed to fetch flights. Please try again.");

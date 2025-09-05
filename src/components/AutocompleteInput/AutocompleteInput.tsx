@@ -6,19 +6,20 @@ import {
   SuggestionsList,
   SuggestionItem,
 } from "./AutocompleteInputStyle";
+import type { Airport } from "../../types/common";
 
-interface AutocompleteInputProps<T> {
+interface AutocompleteInputProps {
   id: string;
   placeholder: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onSelect: (value: string) => void;
-  searchFunction: (query: string) => Promise<T[]>;
-  renderSuggestion: (item: T) => string;
+  onSelect: (value: { code: string; value: string }) => void;
+  searchFunction: (query: string) => Promise<Airport[]>;
+  renderSuggestion: (item: Airport) => string;
   debounceTime?: number;
 }
 
-function AutocompleteInput<T>({
+function AutocompleteInput({
   id,
   placeholder,
   value,
@@ -27,8 +28,8 @@ function AutocompleteInput<T>({
   searchFunction,
   renderSuggestion,
   debounceTime = 300,
-}: AutocompleteInputProps<T>) {
-  const [suggestions, setSuggestions] = useState<T[]>([]);
+}: AutocompleteInputProps) {
+  const [suggestions, setSuggestions] = useState<Airport[]>([]);
   const [loading, setLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isSelecting, setIsSelecting] = useState(false);
@@ -61,9 +62,9 @@ function AutocompleteInput<T>({
     }
   }, [debouncedValue, searchFunction]);
 
-  const handleSelectSuggestion = (item: T) => {
+  const handleSelectSuggestion = (item: Airport) => {
     setIsSelecting(true);
-    onSelect(renderSuggestion(item));
+    onSelect({ code: item.code, value: renderSuggestion(item) });
     setSuggestions([]);
     setShowSuggestions(false);
   };

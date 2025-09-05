@@ -46,6 +46,18 @@ export const Route = styled.div`
   color: ${colors.primary};
 `;
 
+export const RouteDetails = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center the duration and route horizontally */
+`;
+
+export const Duration = styled.span`
+  font-size: 0.9em;
+  color: ${colors.mediumGray};
+  margin-bottom: 5px;
+`;
+
 export const Time = styled.span`
   font-size: 0.9em;
   color: ${colors.mediumGray};
