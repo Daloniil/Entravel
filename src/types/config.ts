@@ -1,5 +1,5 @@
+import type { FlightResult } from "../store/flightSearchStore";
 import type { Airport } from "./common";
-import type { FlightResult } from "../context/FlightSearchContext";
 import type { SearchState } from "./search";
 
 export interface AppConfig {
