@@ -1,12 +1,8 @@
 import React, { useRef } from "react";
 import type { Airport } from "../../types/common";
-import { useAutoCompleteInput } from "./useAutoCompleteInput";
-import {
-  AutoCompleteInputContainer,
-  Input,
-  SuggestionItem,
-  SuggestionsList,
-} from "./AutoCompleteInputStyle.ts";
+import {AutoCompleteInputContainer, Input, SuggestionItem, SuggestionsList} from "./AutoCompleteInputStyle.ts";
+import {useAutoCompleteInput} from "./useAutoCompleteInput.tsx";
+
 
 interface AutoCompleteInputProps {
   id: string;
