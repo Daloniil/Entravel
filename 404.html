@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Redirecting...</title>
+    <link rel="canonical" href="/" />
+    <script>
+      (function () {
+        var redirect = sessionStorage.getItem("redirect");
+        if (redirect && redirect !== window.location.pathname) {
+          sessionStorage.removeItem("redirect");
+          window.location.replace(redirect);
+        } else {
+          var path = window.location.pathname;
+          var newPath = "";
+          if (path.startsWith("/Entravel")) {
+            // Assuming '/Entravel' is your base path if deployed to a subfolder
+            newPath =
+              "/Entravel/index.html" +
+              window.location.search +
+              window.location.hash;
+          } else {
+            newPath =
+              "/index.html" + window.location.search + window.location.hash;
+          }
+          sessionStorage.setItem("redirect", path);
+          window.location.replace(newPath);
+        }
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>
