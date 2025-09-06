@@ -1,8 +1,13 @@
 import React, { useRef } from "react";
 import type { Airport } from "../../types/common";
-import {AutoCompleteInputContainer, Input, SuggestionItem, SuggestionsList} from "./AutoCompleteInputStyle.ts";
-import {useAutoCompleteInput} from "./useAutoCompleteInput.tsx";
-
+import {
+  AutoCompleteInputContainer,
+  Input,
+  SuggestionItem,
+  SuggestionsList,
+  ErrorHint,
+} from "./AutoCompleteInputStyle.ts";
+import { useAutoCompleteInput } from "./useAutoCompleteInput.tsx";
 
 interface AutoCompleteInputProps {
   id: string;
@@ -34,6 +39,7 @@ function AutoCompleteInput({
     setShowSuggestions,
     handleSelectSuggestion,
     handleBlur,
+    errorHint,
   } = useAutoCompleteInput(
     value,
     debounceTime,
@@ -57,6 +63,9 @@ function AutoCompleteInput({
         ref={inputRef}
       />
       {loading && <p>Loading...</p>}
+      {errorHint && !loading && !showSuggestions && (
+        <ErrorHint>{errorHint}</ErrorHint>
+      )}
       {showSuggestions && suggestions.length > 0 && (
         <SuggestionsList>
           {suggestions.map((item, index) => (

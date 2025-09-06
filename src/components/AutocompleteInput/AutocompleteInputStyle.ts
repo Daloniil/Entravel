@@ -50,3 +50,10 @@ export const SuggestionItem = styled.li`
     color: ${colors.white};
   }
 `;
+
+export const ErrorHint = styled.p`
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 8px;
+  padding: 0 16px;
+`;
